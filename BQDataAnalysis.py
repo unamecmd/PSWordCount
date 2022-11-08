@@ -1,5 +1,4 @@
 #from bigquery import client
-from bigquery import client
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import sum
