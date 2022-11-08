@@ -36,8 +36,10 @@ if __name__ == "__main__":
     employeesDF = spark.read.csv(employees_data_file_path, inferSchema=True,header=True)
     # print("Employee database schema")
     # employeesDF.printSchema()
+    employeesDF.show()
 
     departmentsDF = spark.read.csv(departments_data_file_path, inferSchema=True,header=True)
+    departmentsDF.show()
     # print("Department database schema")
     # departmentsDF.printSchema()
 
@@ -49,6 +51,7 @@ if __name__ == "__main__":
     # sql2DF = spark.sql("SELECT * FROM employees")
     # sql2DF.show()
 
+    resultDF = spark.sql("Select ")
     #Total salary for dept # 20
     #sql3DF = spark.sql("SELECT DEPARTMENT_ID,SUM(SALARY) AS TOTAL_SALARY FROM employees WHERE DEPARTMENT_ID='20'")
     sql3DF = spark.sql("SELECT SUM(SALARY) AS TOTAL_SALARY FROM employees WHERE DEPARTMENT_ID='20'")
@@ -56,10 +59,17 @@ if __name__ == "__main__":
     sql3DF.show()
 
 
+
     #List of Dept, Total salary for that dept in ascending order of total salary
     sql4DF = spark.sql("SELECT DEPARTMENT_ID,SUM(SALARY) AS TOTAL_SALARY from employees GROUP BY DEPARTMENT_ID ORDER BY SUM(SALARY)")
     print("#List of Dept, Total salary for that dept in ascending order of total salary")
     sql4DF.show()
+
+    pre_t2DF = employeesDF.groupBy("DEPARTMENT_ID").sum("SALARY")
+    t2DF = pre_t2DF.sort("SALARY")
+    print("Task 2 by other way")
+    t2DF.show()
+
 
     sql3DF.write.csv(task1_outputfile_dir)
     sql4DF.write.csv(task2_outputfile_dir)

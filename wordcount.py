@@ -1,7 +1,10 @@
+from pip._internal.cli import parser
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import split,col,explode,count
 import datetime
 import sys
+import argparse
 
 if __name__ == "__main__":
 
@@ -18,6 +21,25 @@ if __name__ == "__main__":
 
     n = len(sys.argv)
     print("Number of received arguments : " + str(n))
+
+    # Initialize parser
+    parser = argparse.ArgumentParser(description='wordcount project')
+
+    # Adding optional argument
+    parser.add_argument("--inputpath", "-inputpath", help="input file path")
+    parser.add_argument("--outputpath", "-outputpath", help="input file path")
+
+    # Read arguments from command line
+    args = parser.parse_args()
+
+    print(sys.argv[1:])
+
+    # Check for --inputpath
+    if args.files:
+        files = args.files
+
+    print("Input file argument : " + files)
+
 
     if (n != 3):
         print("Missing arguments")
