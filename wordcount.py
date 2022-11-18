@@ -1,5 +1,6 @@
 from pip._internal.cli import parser
 
+from pyspark import SparkContext
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import split,col,explode,count
 import datetime
@@ -26,28 +27,22 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='wordcount project')
 
     # Adding optional argument
-    parser.add_argument("--inputpath", "-inputpath", help="input file path")
-    parser.add_argument("--outputpath", "-outputpath", help="input file path")
-
+    parser.add_argument("--arg1", help="input file path")
+    parser.add_argument("--arg2", help="output file path")
+    #
     # Read arguments from command line
     args = parser.parse_args()
 
-    print(sys.argv[1:])
+    # if (n != 3):
+    #     print("Missing arguments")
+    # elif (n == 3):
+    #     for i in range(1,n):
+    #         print("Argument : " + str(i) + sys.argv[i])
+    #     data_file_path = sys.argv[1]
+    #     output_dir = sys.argv[2]
 
-    # Check for --inputpath
-    if args.files:
-        files = args.files
-
-    print("Input file argument : " + files)
-
-
-    if (n != 3):
-        print("Missing arguments")
-    elif (n == 3):
-        for i in range(1,n):
-            print("Argument : " + str(i) + sys.argv[i])
-        data_file_path = sys.argv[1]
-        output_dir = sys.argv[2]
+    data_file_path = args.arg1
+    output_dir = args.arg2
 
     outputfile_dir = output_dir + output_file_name
 
@@ -68,16 +63,17 @@ if __name__ == "__main__":
         .drop('value', 'words').groupBy('word').agg(count('word') \
                                                     .alias('count')).orderBy('count', ascending=False)
 
-    output=dfwords.collect()
-    for (word, count) in output:
-        print("%s = %i" % (word, count))
+    # output=dfwords.collect()
+    # for (word, count) in output:
+    #     print("%s = %i" % (word, count))
+    #
+    # outDF = spark.createDataFrame(data=output, schema=["Word", "Count"])
+    # outDF.show()
 
-    outDF = spark.createDataFrame(data=output, schema=["Word", "Count"])
-    outDF.show()
+    # print("output dataframe length ")
+    # print((outDF.count(), len(outDF.columns)))
 
-    print("output dataframe length ")
-    print((outDF.count(), len(outDF.columns)))
-
-    outDF.write.csv(outputfile_dir)
+    #outDF.write.csv(outputfile_dir)
+    dfwords.write.csv(outputfile_dir)
     spark.stop()
 

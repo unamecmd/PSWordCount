@@ -1,4 +1,4 @@
-#from bigquery import client
+from google.cloud import bigquery
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import sum
@@ -6,6 +6,7 @@ from pyspark.sql.functions import sum
 appName = "PySparkBigQuery"
 master = "local"
 bucket = "pnkj_t1_bucket/temp"
+client = bigquery.Client()
 
 # Create Spark Session #    .config('spark.jars','guava-11.0.1.jar,gcsio-1.9.0-javadoc.jar') \
 spark = SparkSession.builder \
@@ -17,7 +18,10 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 
+
+
 employeesDF = spark.read.format("bigquery").option('project','pnkj-t1').option("table","pnkj-t1.assign3_dataset.emplyees_table").load()
+employeesDF.cache()
 employeesDF.show()
 employeesDF.printSchema()
 
@@ -56,9 +60,18 @@ result2DF.show()
 # Saving the data to BigQuery
 result2DF.write.format('bigquery').option('table', 'pnkj-t1.assign3_dataset.task2_out_table').mode('overwrite').save()
 
+
+dataset_ref = bigquery.DatasetReference('pnkj-t1', 'assign3_dataset')
+table_ref = dataset_ref.table('task2_out_table')
+bucket_name = 'pnkj_t1_bucket/output/Assignment3_Output/'
+
+destination_uri = "gs://{}/{}".format(bucket_name, "task2_output.csv")
+
+
+
 #Exporting BigQuery Table in GCS Bucket
-# extract_job = client.extract_table('pnkj-t1.assign3_dataset.task2_out_table', 'gs://pnkj_t1_bucket/temp', location="us-central1")
-# extract_job.result()
+extract_job = client.extract_table('pnkj-t1.assign3_dataset.task2_out_table', destination_uri , location="us-central1")
+extract_job.result()
 
 
 

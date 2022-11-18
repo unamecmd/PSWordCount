@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import split,col,explode,count
 import datetime
 import sys
+import argparse
 
 if __name__ == "__main__":
 
@@ -20,15 +21,32 @@ if __name__ == "__main__":
     n = len(sys.argv)
     print("Number of received arguments : " + str(n))
 
-    if (n != 5):
-        print("Missing arguments")
-    elif (n == 5):
-        for i in range(1,n):
-            print("Argument : " + str(i) + sys.argv[i])
-        employees_data_file_path = sys.argv[1]
-        departments_data_file_path = sys.argv[2]
-        task1_output_dir = sys.argv[3]
-        task2_output_dir = sys.argv[4]
+    # Initialize parser
+    parser = argparse.ArgumentParser(description='DataAnalytics project')
+
+    # Adding optional argument
+    parser.add_argument("--empDataPath", help="emplyees file path")
+    parser.add_argument("--deptDataPath", help="departments file path")
+    parser.add_argument("--task1OutPath", help="task 1 output file path")
+    parser.add_argument("--task2OutPath", help="task 2 output file path")
+
+    # Read arguments from command line
+    args = parser.parse_args()
+
+    # if (n != 5):
+    #     print("Missing arguments")
+    # elif (n == 5):
+    #     for i in range(1,n):
+    #         print("Argument : " + str(i) + sys.argv[i])
+    #     employees_data_file_path = sys.argv[1]
+    #     departments_data_file_path = sys.argv[2]
+    #     task1_output_dir = sys.argv[3]
+    #     task2_output_dir = sys.argv[4]
+
+    employees_data_file_path = args.empDataPath
+    departments_data_file_path = args.deptDataPath
+    task1_output_dir = args.task1OutPath
+    task2_output_dir = args.task2OutPath
 
     task1_outputfile_dir = task1_output_dir + task1_output_file_name
     task2_outputfile_dir = task2_output_dir + task2_output_file_name
@@ -51,7 +69,6 @@ if __name__ == "__main__":
     # sql2DF = spark.sql("SELECT * FROM employees")
     # sql2DF.show()
 
-    resultDF = spark.sql("Select ")
     #Total salary for dept # 20
     #sql3DF = spark.sql("SELECT DEPARTMENT_ID,SUM(SALARY) AS TOTAL_SALARY FROM employees WHERE DEPARTMENT_ID='20'")
     sql3DF = spark.sql("SELECT SUM(SALARY) AS TOTAL_SALARY FROM employees WHERE DEPARTMENT_ID='20'")
@@ -64,12 +81,6 @@ if __name__ == "__main__":
     sql4DF = spark.sql("SELECT DEPARTMENT_ID,SUM(SALARY) AS TOTAL_SALARY from employees GROUP BY DEPARTMENT_ID ORDER BY SUM(SALARY)")
     print("#List of Dept, Total salary for that dept in ascending order of total salary")
     sql4DF.show()
-
-    pre_t2DF = employeesDF.groupBy("DEPARTMENT_ID").sum("SALARY")
-    t2DF = pre_t2DF.sort("SALARY")
-    print("Task 2 by other way")
-    t2DF.show()
-
 
     sql3DF.write.csv(task1_outputfile_dir)
     sql4DF.write.csv(task2_outputfile_dir)
